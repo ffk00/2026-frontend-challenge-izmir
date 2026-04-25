@@ -3,13 +3,47 @@
 ## User Information
 Please fill in your information after forking this repository:
 
-- **Name**: [Your Name]
+- **Name**: Fatih Furkan Keser
 
 ## Project Description
-[Add a brief description of your project here]
+Saving Podo is a frontend investigation tool built for the Jotform challenge. It loads five live Jotform forms, normalizes their messy submissions into one case file, resolves misspelled people and clustered locations at runtime, and lets the user investigate the case through a synced map, timeline, actor directory, location directory, slide-over details, and global search.
+
+The app is intentionally data-driven: names, places, events, aliases, and connections come from the Jotform API response rather than hardcoded story data.
 
 ## Getting Started
-[Add instructions for setting up and running the project]
+Requirements:
+
+- Node.js 20+
+- Jotform API key access for the challenge forms
+
+Setup:
+
+```bash
+npm install
+```
+
+Create `.env.local` in the project root:
+
+```bash
+VITE_JOTFORM_KEYS=key1,key2,key3,key4,key5
+```
+
+Run locally:
+
+```bash
+npm run dev
+```
+
+Open the Vite URL shown in the terminal, usually `http://localhost:5173`.
+
+Validate before review:
+
+```bash
+npm run lint
+npm run build
+```
+
+If a form schema changes, update only `src/data/forms.ts`.
 
 # 🚀 Challenge Duyurusu
 
