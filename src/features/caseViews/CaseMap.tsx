@@ -115,9 +115,6 @@ export function CaseMap({ caseFile, selectedEventId, onSelectEvent, onOpenPlace 
                 <div className={styles.mapPopup}>
                   <strong>{marker.place.name}</strong>
                   <span>{marker.events.length} event{marker.events.length === 1 ? '' : 's'}</span>
-                  <button type="button" onClick={() => onOpenPlace(marker.place.id)}>
-                    Open location
-                  </button>
                 </div>
               </Popup>
             </Marker>

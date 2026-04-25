@@ -159,22 +159,6 @@
   font-size: 12px;
 }
 
-.mapPopup button {
-  align-self: flex-start;
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-h);
-  padding: 6px 8px;
-  cursor: pointer;
-}
-
-.mapPopup button:hover,
-.mapPopup button:focus-visible {
-  outline: none;
-  border-color: var(--accent);
-}
-
 .mapLegend {
   position: absolute;
   left: 18px;
