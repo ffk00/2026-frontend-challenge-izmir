@@ -595,6 +595,214 @@
   background: rgba(255, 255, 255, 0.04);
 }
 
+.messageApp {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: calc(100svh - 126px);
+}
+
+.messageAppBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 var(--hairline);
+}
+
+.messageAppBar > span,
+.messageMuted {
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.messageConversation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.messageConversation button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.messageThread {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 360px;
+  max-height: min(58svh, 620px);
+  overflow: auto;
+  padding: 18px 12px;
+  border: 1px solid rgba(0, 153, 255, 0.16);
+  border-radius: 12px;
+  background:
+    linear-gradient(rgba(0, 153, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 153, 255, 0.035) 1px, transparent 1px),
+    rgba(5, 9, 31, 0.34);
+  background-size: 28px 28px, 28px 28px, auto;
+}
+
+.messageGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.messageDayPill {
+  align-self: center;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(7, 13, 51, 0.76);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1;
+}
+
+.messageBubbleRow {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: end;
+  padding: 4px;
+  border-radius: 12px;
+}
+
+.messageSelected {
+  background: rgba(255, 182, 41, 0.08);
+  box-shadow: inset 3px 0 0 var(--brand-yellow);
+}
+
+.messageAvatar {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(126, 193, 14, 0.48);
+  border-radius: 50%;
+  background: rgba(126, 193, 14, 0.12);
+  color: var(--text-h);
+  font: 800 14px/1 var(--sans);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.messageAvatar:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.messageAvatar:not(:disabled):hover,
+.messageAvatar:not(:disabled):focus-visible {
+  outline: none;
+  border-color: var(--brand-green);
+  background: rgba(126, 193, 14, 0.18);
+}
+
+.messageStack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  min-width: 0;
+}
+
+.messageBubble {
+  max-width: min(100%, 34rem);
+  padding: 14px 16px;
+  border: 1px solid rgba(0, 153, 255, 0.32);
+  border-radius: 6px 16px 16px 16px;
+  background: linear-gradient(180deg, rgba(0, 153, 255, 0.16), rgba(0, 153, 255, 0.08));
+  color: var(--text-h);
+  box-shadow:
+    0 14px 26px -22px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 var(--hairline);
+}
+
+.messageSelected .messageBubble {
+  border-color: rgba(255, 182, 41, 0.52);
+  background: linear-gradient(180deg, rgba(0, 153, 255, 0.2), rgba(0, 153, 255, 0.1));
+}
+
+.messageBubble p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.messageBubbleMeta,
+.messageFooter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.messageBubbleMeta span + span::before,
+.messageFooter span + span::before {
+  content: '/';
+  margin-right: 8px;
+  color: rgba(159, 177, 213, 0.52);
+}
+
+.messageFooter {
+  padding-inline: 2px;
+}
+
+.messageLocation {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-h);
+  text-align: left;
+  cursor: pointer;
+}
+
+.messageLocation span {
+  color: var(--brand-green);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.messageLocation strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.messageLocation:hover,
+.messageLocation:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+
 .inlineList {
   display: flex;
   flex-wrap: wrap;
