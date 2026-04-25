@@ -1,122 +1,149 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect, useState } from 'react';
+import { CaseProvider, useCase } from './store/caseStore';
+import { LoadingScreen } from './components/LoadingScreen';
+import { BriefingModal } from './features/briefing/BriefingModal';
+import { Timeline } from './features/timeline/Timeline';
+import { InvestigationView } from './features/caseViews/InvestigationView';
+import { ActorsView, LocationsView } from './features/caseViews/DirectoryViews';
+import { EntityPanel } from './features/caseViews/EntityPanel';
+import type { AppView, Selection } from './features/caseViews/types';
+import { GlobalSearch } from './features/search/GlobalSearch';
+import podoMark from './assets/brand/pixel-art-2_podo.jpg';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+const NAV_ITEMS: { id: AppView; label: string }[] = [
+  { id: 'investigation', label: 'Investigation' },
+  { id: 'timeline', label: 'Timeline' },
+  { id: 'actors', label: 'Actors' },
+  { id: 'locations', label: 'Locations' },
+];
+
+function CaseShell() {
+  const { status, caseFile, error, reload } = useCase();
+  const [briefingDismissed, setBriefingDismissed] = useState(false);
+  const [view, setView] = useState<AppView>('investigation');
+  const [selection, setSelection] = useState<Selection | null>(null);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setSelection(null);
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
+  if (status === 'loading' || status === 'idle') {
+    return <LoadingScreen />;
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="error">
+        <h2>Couldn't load the case file.</h2>
+        <p>{error}</p>
+        <button className="retry" onClick={reload}>Retry</button>
+      </div>
+    );
+  }
+
+  const file = caseFile!;
+  const fetchedTotal = Object.values(file.stats.fetched).reduce((a, b) => a + b, 0);
+  const droppedTotal = Object.values(file.stats.dropped).reduce((a, b) => a + b, 0);
+
+  function selectEvent(eventId: string) {
+    setSelectedEventId(eventId);
+    setSelection({ type: 'event', id: eventId });
+  }
+
+  function selectFromSearch(nextSelection: Selection) {
+    setSelection(nextSelection);
+    if (nextSelection.type === 'event') {
+      setSelectedEventId(nextSelection.id);
+      setView('investigation');
+    }
+    if (nextSelection.type === 'person') setView('actors');
+    if (nextSelection.type === 'place') setView('locations');
+  }
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+      {!briefingDismissed && (
+        <BriefingModal
+          totalEvents={file.events.length}
+          onDismiss={() => setBriefingDismissed(true)}
+        />
+      )}
+      <header className="topbar">
+        <div className="brand">
+          <img className="brandMark" src={podoMark} alt="" />
+          <div>
+            <div className="brandName">Saving Podo</div>
+            <div className="brandSub">Detective platform</div>
+          </div>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
+        <nav className="primaryNav" aria-label="Primary">
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={view === item.id ? 'active' : ''}
+              onClick={() => setView(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
+        <GlobalSearch caseFile={file} onSelect={selectFromSearch} />
+        <div className="stats">
+          <span>{file.events.length} events</span>
+          <span>{fetchedTotal} fetched</span>
+          <span>{droppedTotal} dropped</span>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+      </header>
+      <main className="main">
+        {view === 'investigation' && (
+          <InvestigationView
+            caseFile={file}
+            selectedEventId={selectedEventId}
+            onSelectEvent={selectEvent}
+            onOpenPlace={(id) => setSelection({ type: 'place', id })}
+          />
+        )}
+        {view === 'timeline' && (
+          <Timeline
+            events={file.events}
+            resolution={file.resolution}
+            selectedEventId={selectedEventId}
+            onEventSelect={selectEvent}
+          />
+        )}
+        {view === 'actors' && (
+          <ActorsView caseFile={file} onOpenPerson={(id) => setSelection({ type: 'person', id })} />
+        )}
+        {view === 'locations' && (
+          <LocationsView caseFile={file} onOpenPlace={(id) => setSelection({ type: 'place', id })} />
+        )}
+      </main>
+      <EntityPanel
+        caseFile={file}
+        selection={selection}
+        onClose={() => setSelection(null)}
+        onSelectEvent={selectEvent}
+        onOpenPerson={(id) => setSelection({ type: 'person', id })}
+        onOpenPlace={(id) => setSelection({ type: 'place', id })}
+      />
     </>
-  )
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <CaseProvider>
+      <CaseShell />
+    </CaseProvider>
+  );
+}
