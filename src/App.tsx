@@ -18,11 +18,16 @@ const NAV_ITEMS: { id: AppView; label: string }[] = [
   { id: 'locations', label: 'Locations' },
 ];
 
+function sameSelection(a: Selection | null, b: Selection): boolean {
+  return Boolean(a && a.type === b.type && a.id === b.id);
+}
+
 function CaseShell() {
   const { status, caseFile, error, reload } = useCase();
   const [briefingDismissed, setBriefingDismissed] = useState(false);
   const [view, setView] = useState<AppView>('investigation');
   const [selection, setSelection] = useState<Selection | null>(null);
+  const [selectionHistory, setSelectionHistory] = useState<Selection[]>([]);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const [statsOpen, setStatsOpen] = useState(false);
 
@@ -30,6 +35,7 @@ function CaseShell() {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
         setSelection(null);
+        setSelectionHistory([]);
       }
     }
 
@@ -55,19 +61,53 @@ function CaseShell() {
   const fetchedTotal = Object.values(file.stats.fetched).reduce((a, b) => a + b, 0);
   const droppedTotal = Object.values(file.stats.dropped).reduce((a, b) => a + b, 0);
 
+  function openSelection(nextSelection: Selection, addToHistory: boolean) {
+    setSelection((current) => {
+      if (sameSelection(current, nextSelection)) return current;
+      if (addToHistory && current) {
+        setSelectionHistory((history) => [...history, current]);
+      } else {
+        setSelectionHistory([]);
+      }
+      return nextSelection;
+    });
+  }
+
   function selectEvent(eventId: string) {
     setSelectedEventId(eventId);
-    setSelection({ type: 'event', id: eventId });
+    openSelection({ type: 'event', id: eventId }, false);
+  }
+
+  function selectPanelEvent(eventId: string) {
+    setSelectedEventId(eventId);
+    openSelection({ type: 'event', id: eventId }, true);
   }
 
   function selectFromSearch(nextSelection: Selection) {
-    setSelection(nextSelection);
+    openSelection(nextSelection, false);
     if (nextSelection.type === 'event') {
       setSelectedEventId(nextSelection.id);
       setView('investigation');
     }
     if (nextSelection.type === 'person') setView('actors');
     if (nextSelection.type === 'place') setView('locations');
+  }
+
+  function closeSelection() {
+    setSelection(null);
+    setSelectionHistory([]);
+  }
+
+  function goBackSelection() {
+    setSelectionHistory((history) => {
+      const previous = history.at(-1);
+      if (!previous) return history;
+      setSelection(previous);
+      if (previous.type === 'event') {
+        setSelectedEventId(previous.id);
+      }
+      return history.slice(0, -1);
+    });
   }
 
   return (
@@ -125,7 +165,7 @@ function CaseShell() {
             caseFile={file}
             selectedEventId={selectedEventId}
             onSelectEvent={selectEvent}
-            onOpenPlace={(id) => setSelection({ type: 'place', id })}
+            onOpenPlace={(id) => openSelection({ type: 'place', id }, false)}
           />
         )}
         {view === 'timeline' && (
@@ -137,19 +177,21 @@ function CaseShell() {
           />
         )}
         {view === 'actors' && (
-          <ActorsView caseFile={file} onOpenPerson={(id) => setSelection({ type: 'person', id })} />
+          <ActorsView caseFile={file} onOpenPerson={(id) => openSelection({ type: 'person', id }, false)} />
         )}
         {view === 'locations' && (
-          <LocationsView caseFile={file} onOpenPlace={(id) => setSelection({ type: 'place', id })} />
+          <LocationsView caseFile={file} onOpenPlace={(id) => openSelection({ type: 'place', id }, false)} />
         )}
       </main>
       <EntityPanel
         caseFile={file}
         selection={selection}
-        onClose={() => setSelection(null)}
-        onSelectEvent={selectEvent}
-        onOpenPerson={(id) => setSelection({ type: 'person', id })}
-        onOpenPlace={(id) => setSelection({ type: 'place', id })}
+        canGoBack={selectionHistory.length > 0}
+        onBack={goBackSelection}
+        onClose={closeSelection}
+        onSelectEvent={selectPanelEvent}
+        onOpenPerson={(id) => openSelection({ type: 'person', id }, true)}
+        onOpenPlace={(id) => openSelection({ type: 'place', id }, true)}
       />
     </>
   );

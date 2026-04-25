@@ -7,6 +7,8 @@ import styles from './caseViews.module.css';
 type Props = {
   caseFile: CaseFile;
   selection: Selection | null;
+  canGoBack: boolean;
+  onBack: () => void;
   onClose: () => void;
   onSelectEvent: (eventId: string) => void;
   onOpenPerson: (personId: PersonId) => void;
@@ -160,6 +162,8 @@ function ConversationThread({
 export function EntityPanel({
   caseFile,
   selection,
+  canGoBack,
+  onBack,
   onClose,
   onSelectEvent,
   onOpenPerson,
@@ -185,9 +189,16 @@ export function EntityPanel({
           <div className={styles.panelKicker}>{selection.type}</div>
           <h2>{event ? KIND_COPY[event.kind] : person?.name ?? place?.name ?? 'Unknown'}</h2>
         </div>
-        <button type="button" className={styles.iconButton} onClick={onClose} aria-label="Close panel">
-          X
-        </button>
+        <div className={styles.panelActions}>
+          {canGoBack && (
+            <button type="button" className={styles.backButton} onClick={onBack}>
+              Back
+            </button>
+          )}
+          <button type="button" className={styles.iconButton} onClick={onClose} aria-label="Close panel">
+            X
+          </button>
+        </div>
       </div>
 
       {event && (
