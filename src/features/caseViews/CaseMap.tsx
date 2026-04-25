@@ -1,12 +1,14 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useMemo } from 'react';
+import { divIcon, type LatLngTuple } from 'leaflet';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 import type { CaseFile, Event, PlaceId, ResolvedPlace } from '../../data/types';
 import styles from './caseViews.module.css';
 
-type Marker = {
+type MarkerData = {
   place: ResolvedPlace;
   events: Event[];
-  x: number;
-  y: number;
+  position: LatLngTuple;
 };
 
 type Props = {
@@ -16,92 +18,112 @@ type Props = {
   onOpenPlace: (placeId: PlaceId) => void;
 };
 
-function eventTime(event: Event): number {
-  return event.at.getTime();
-}
+const IZMIR_FALLBACK_CENTER: LatLngTuple = [38.4237, 27.1428];
 
-function markerStyle(marker: Marker): CSSProperties {
-  return {
-    '--x': `${marker.x}%`,
-    '--y': `${marker.y}%`,
-  } as CSSProperties;
-}
-
-function buildMarkers(caseFile: CaseFile): Marker[] {
-  const places = caseFile.resolution.places.filter((place) => place.coords);
-  if (places.length === 0) return [];
-
-  const lats = places.map((place) => place.coords![0]);
-  const lngs = places.map((place) => place.coords![1]);
-  let minLat = Math.min(...lats);
-  let maxLat = Math.max(...lats);
-  let minLng = Math.min(...lngs);
-  let maxLng = Math.max(...lngs);
-
-  if (minLat === maxLat) {
-    minLat -= 0.01;
-    maxLat += 0.01;
-  }
-
-  if (minLng === maxLng) {
-    minLng -= 0.01;
-    maxLng += 0.01;
-  }
-
+function buildMarkers(caseFile: CaseFile): MarkerData[] {
   const byId = new Map(caseFile.events.map((event) => [event.id, event]));
 
-  return places.map((place) => {
-    const events = place.eventIds
-      .map((id) => byId.get(id))
-      .filter((event): event is Event => Boolean(event))
-      .sort((a, b) => eventTime(a) - eventTime(b));
-    const [lat, lng] = place.coords!;
-    return {
-      place,
-      events,
-      x: ((lng - minLng) / (maxLng - minLng)) * 86 + 7,
-      y: (1 - (lat - minLat) / (maxLat - minLat)) * 76 + 12,
-    };
+  return caseFile.resolution.places
+    .filter((place) => place.coords)
+    .map((place) => {
+      const events = place.eventIds
+        .map((id) => byId.get(id))
+        .filter((event): event is Event => Boolean(event))
+        .sort((a, b) => a.at.getTime() - b.at.getTime());
+
+      return {
+        place,
+        events,
+        position: place.coords! as LatLngTuple,
+      };
+    });
+}
+
+function MapViewport({ markers }: { markers: MarkerData[] }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (markers.length === 0) {
+      map.setView(IZMIR_FALLBACK_CENTER, 12);
+      return;
+    }
+
+    if (markers.length === 1) {
+      map.setView(markers[0].position, 14);
+      return;
+    }
+
+    const bounds: LatLngTuple[] = markers.map((marker) => marker.position);
+    map.fitBounds(bounds, {
+      animate: false,
+      padding: [48, 48],
+      maxZoom: 15,
+    });
+  }, [map, markers]);
+
+  return null;
+}
+
+function markerIcon(count: number, active: boolean) {
+  return divIcon({
+    className: `${styles.leafletPin} ${active ? styles.leafletPinActive : ''}`,
+    html: `<span class="${styles.pinDot}"></span><span class="${styles.pinCount}">${count}</span>`,
+    iconSize: [34, 30],
+    iconAnchor: [17, 15],
+    popupAnchor: [0, -14],
   });
 }
 
 export function CaseMap({ caseFile, selectedEventId, onSelectEvent, onOpenPlace }: Props) {
-  const markers = buildMarkers(caseFile);
-  const locatedEventIds = new Set(markers.flatMap((marker) => marker.events.map((event) => event.id)));
+  const markers = useMemo(() => buildMarkers(caseFile), [caseFile]);
+  const locatedEventIds = useMemo(
+    () => new Set(markers.flatMap((marker) => marker.events.map((event) => event.id))),
+    [markers],
+  );
   const unlocatedCount = caseFile.events.length - locatedEventIds.size;
-
-  if (markers.length === 0) {
-    return (
-      <section className={styles.mapPanel}>
-        <div className={styles.mapEmpty}>No coordinates found in the loaded case file.</div>
-      </section>
-    );
-  }
 
   return (
     <section className={styles.mapPanel} aria-label="Event map">
-      <div className={styles.mapGrid} aria-hidden="true" />
-      <div className={styles.mapLabel}>Resolved location clusters</div>
-      {markers.map((marker) => {
-        const active = marker.events.some((event) => event.id === selectedEventId);
-        const firstEvent = marker.events[0];
-        return (
-          <button
-            key={marker.place.id}
-            type="button"
-            className={`${styles.mapPin} ${active ? styles.mapPinActive : ''}`}
-            style={markerStyle(marker)}
-            title={`${marker.place.name}: ${marker.events.length} event${marker.events.length === 1 ? '' : 's'}`}
-            onClick={() => {
-              if (firstEvent) onSelectEvent(firstEvent.id);
-              onOpenPlace(marker.place.id);
-            }}
-          >
-            <span className={styles.pinDot} />
-            <span className={styles.pinCount}>{marker.events.length}</span>
-          </button>
-        );
-      })}
+      <MapContainer
+        className={styles.leafletMap}
+        center={IZMIR_FALLBACK_CENTER}
+        zoom={12}
+        scrollWheelZoom
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <MapViewport markers={markers} />
+        {markers.map((marker) => {
+          const active = marker.events.some((event) => event.id === selectedEventId);
+          const firstEvent = marker.events[0];
+
+          return (
+            <Marker
+              key={marker.place.id}
+              position={marker.position}
+              icon={markerIcon(marker.events.length, active)}
+              eventHandlers={{
+                click: () => {
+                  if (firstEvent) onSelectEvent(firstEvent.id);
+                  onOpenPlace(marker.place.id);
+                },
+              }}
+            >
+              <Popup>
+                <div className={styles.mapPopup}>
+                  <strong>{marker.place.name}</strong>
+                  <span>{marker.events.length} event{marker.events.length === 1 ? '' : 's'}</span>
+                  <button type="button" onClick={() => onOpenPlace(marker.place.id)}>
+                    Open location
+                  </button>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
+      </MapContainer>
       <div className={styles.mapLegend}>
         <span>{markers.length} places</span>
         <span>{locatedEventIds.size} mapped events</span>

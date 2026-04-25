@@ -5,12 +5,11 @@
   height: 24px;
   padding: 0 10px 0 9px;
   border-radius: 999px;
-  background: var(--code-bg);
+  background: rgba(255, 255, 255, 0.055);
   border: 1px solid var(--border);
   color: var(--text-h);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: -0.1px;
+  font-size: 12px;
+  font-weight: 650;
   transition: background 120ms ease, border-color 120ms ease;
   font-family: inherit;
 }
@@ -20,8 +19,8 @@ button.chip {
 }
 
 .chip:hover {
-  background: hsl(var(--chip-hue) 30% 92%);
-  border-color: hsl(var(--chip-hue) 30% 75%);
+  background: hsl(var(--chip-hue) 25% 22%);
+  border-color: hsl(var(--chip-hue) 34% 44%);
 }
 
 .chip:focus-visible {
@@ -30,23 +29,13 @@ button.chip {
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: hsl(var(--chip-hue) 45% 55%);
+  background: hsl(var(--chip-hue) 52% 60%);
   flex-shrink: 0;
 }
 
 .label {
   white-space: nowrap;
-}
-
-@media (prefers-color-scheme: dark) {
-  .chip:hover {
-    background: hsl(var(--chip-hue) 25% 22%);
-    border-color: hsl(var(--chip-hue) 30% 40%);
-  }
-  .dot {
-    background: hsl(var(--chip-hue) 50% 60%);
-  }
 }

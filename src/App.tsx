@@ -8,7 +8,7 @@ import { ActorsView, LocationsView } from './features/caseViews/DirectoryViews';
 import { EntityPanel } from './features/caseViews/EntityPanel';
 import type { AppView, Selection } from './features/caseViews/types';
 import { GlobalSearch } from './features/search/GlobalSearch';
-import podoMark from './assets/brand/pixel-art-2_podo.jpg';
+import podoMark from './assets/brand/saving_podo_header.png';
 import './App.css';
 
 const NAV_ITEMS: { id: AppView; label: string }[] = [
@@ -24,6 +24,7 @@ function CaseShell() {
   const [view, setView] = useState<AppView>('investigation');
   const [selection, setSelection] = useState<Selection | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [statsOpen, setStatsOpen] = useState(false);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -99,9 +100,23 @@ function CaseShell() {
         </nav>
         <GlobalSearch caseFile={file} onSelect={selectFromSearch} />
         <div className="stats">
-          <span>{file.events.length} events</span>
-          <span>{fetchedTotal} fetched</span>
-          <span>{droppedTotal} dropped</span>
+          <span className="eventsStat">{file.events.length} events</span>
+          <button
+            type="button"
+            className="statsInfo"
+            title="Loaded events after dropped invalid rows"
+            aria-label="Loaded events after dropped invalid rows"
+            aria-expanded={statsOpen}
+            onClick={() => setStatsOpen((open) => !open)}
+          >
+            i
+          </button>
+          {statsOpen && (
+            <div className="statsPopover">
+              <div><strong>{fetchedTotal}</strong> fetched</div>
+              <div><strong>{droppedTotal}</strong> dropped</div>
+            </div>
+          )}
         </div>
       </header>
       <main className="main">
