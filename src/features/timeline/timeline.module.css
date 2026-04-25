@@ -1,0 +1,130 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 32px 0;
+  text-align: left;
+}
+
+.compact {
+  gap: 20px;
+  padding: 0;
+}
+
+.empty {
+  color: var(--text);
+  text-align: center;
+  padding: 64px 0;
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dayHeader {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  color: var(--accent);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 64px 24px 1fr;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  align-items: center;
+  transition: background 120ms ease;
+}
+
+.row:hover {
+  background: var(--social-bg);
+}
+
+.selected {
+  background: rgba(255, 182, 41, 0.12);
+  box-shadow: inset 3px 0 0 var(--brand-yellow);
+}
+
+.row[role='button'] {
+  cursor: pointer;
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.time {
+  font-family: var(--mono);
+  color: var(--text-h);
+  font-size: 13px;
+}
+
+.kindCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+/* Body region — used by EventBody */
+
+.body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-h);
+  font-size: 14px;
+  line-height: 1.5;
+  min-width: 0;
+}
+
+.connector {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.place {
+  font-weight: 500;
+  color: var(--text-h);
+  font-size: 13px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--code-bg);
+  font-family: var(--mono);
+}
+
+.quote {
+  color: var(--text);
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+
+.confidence {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.conf_low    { background: rgba(255, 97, 0, 0.18); color: #ff9b5c; }
+.conf_medium { background: rgba(255, 182, 41, 0.18); color: #ffd47a; }
+.conf_high   { background: rgba(126, 193, 14, 0.18); color: #aee653; }
