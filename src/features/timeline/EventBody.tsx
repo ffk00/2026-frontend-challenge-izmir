@@ -59,9 +59,11 @@ export function EventBody({ event, resolution }: Props) {
     case 'message':
       return (
         <div className={styles.body}>
-          <ActorChip fallback={a} person={actorA} />
-          <span className={styles.connector}>-&gt;</span>
-          <ActorChip fallback={b} person={actorB} />
+          <div className={styles.metaLine}>
+            <ActorChip fallback={a} person={actorA} />
+            <span className={styles.connector}>-&gt;</span>
+            <ActorChip fallback={b} person={actorB} />
+          </div>
           {event.text && <span className={styles.quote}>"{event.text}"</span>}
         </div>
       );
@@ -69,9 +71,11 @@ export function EventBody({ event, resolution }: Props) {
     case 'checkin':
       return (
         <div className={styles.body}>
-          <ActorChip fallback={a} person={actorA} />
-          <span className={styles.connector}>checked in at</span>
-          {event.place && <Place fallback={event.place} place={place} />}
+          <div className={styles.metaLine}>
+            <ActorChip fallback={a} person={actorA} />
+            <span className={styles.connector}>checked in at</span>
+            {event.place && <Place fallback={event.place} place={place} />}
+          </div>
           {event.text && <span className={styles.quote}>- "{event.text}"</span>}
         </div>
       );
@@ -79,15 +83,17 @@ export function EventBody({ event, resolution }: Props) {
     case 'sighting':
       return (
         <div className={styles.body}>
-          <ActorChip fallback={a} person={actorA} />
-          <span className={styles.connector}>seen with</span>
-          <ActorChip fallback={b} person={actorB} />
-          {event.place && (
-            <>
-              <span className={styles.connector}>at</span>
-              <Place fallback={event.place} place={place} />
-            </>
-          )}
+          <div className={styles.metaLine}>
+            <ActorChip fallback={a} person={actorA} />
+            <span className={styles.connector}>seen with</span>
+            <ActorChip fallback={b} person={actorB} />
+            {event.place && (
+              <>
+                <span className={styles.connector}>at</span>
+                <Place fallback={event.place} place={place} />
+              </>
+            )}
+          </div>
           {event.text && <span className={styles.quote}>- "{event.text}"</span>}
         </div>
       );
@@ -95,8 +101,10 @@ export function EventBody({ event, resolution }: Props) {
     case 'note':
       return (
         <div className={styles.body}>
-          <ActorChip fallback={a} person={actorA} />
-          <span className={styles.connector}>wrote</span>
+          <div className={styles.metaLine}>
+            <ActorChip fallback={a} person={actorA} />
+            <span className={styles.connector}>wrote</span>
+          </div>
           <span className={styles.quote}>"{event.text}"</span>
         </div>
       );
@@ -104,19 +112,21 @@ export function EventBody({ event, resolution }: Props) {
     case 'tip':
       return (
         <div className={styles.body}>
-          {event.confidence && (
-            <span className={`${styles.confidence} ${styles[`conf_${event.confidence}`]}`}>
-              {event.confidence}
-            </span>
-          )}
-          <span className={styles.connector}>tip about</span>
-          <ActorChip fallback={a} person={actorA} />
-          {event.place && (
-            <>
-              <span className={styles.connector}>at</span>
-              <Place fallback={event.place} place={place} />
-            </>
-          )}
+          <div className={styles.metaLine}>
+            {event.confidence && (
+              <span className={`${styles.confidence} ${styles[`conf_${event.confidence}`]}`}>
+                {event.confidence}
+              </span>
+            )}
+            <span className={styles.connector}>tip about</span>
+            <ActorChip fallback={a} person={actorA} />
+            {event.place && (
+              <>
+                <span className={styles.connector}>at</span>
+                <Place fallback={event.place} place={place} />
+              </>
+            )}
+          </div>
           {event.text && <span className={styles.quote}>- "{event.text}"</span>}
         </div>
       );
