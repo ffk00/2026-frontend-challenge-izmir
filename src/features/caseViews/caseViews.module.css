@@ -220,37 +220,141 @@
 }
 
 .directory {
-  padding: 28px 0 64px;
+  padding: 32px 0 72px;
   text-align: left;
+}
+
+.sectionHeaderTop {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.sectionCount {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: var(--brand-blue);
+  padding: 3px 9px;
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  background: var(--accent-bg);
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .cardGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 286px), 1fr));
+  gap: 14px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.paginationControls button {
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-h);
+  font: 600 12px/1 var(--sans);
+  cursor: pointer;
+}
+
+.paginationControls button:hover:not(:disabled),
+.paginationControls button:focus-visible:not(:disabled) {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.paginationControls button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .entityCard {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-height: 118px;
-  padding: 15px;
+  min-height: 134px;
+  padding: 16px 18px 18px;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface-soft);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(0, 153, 255, 0.05) 0%, rgba(10, 21, 81, 0) 55%),
+    var(--surface-soft);
   color: var(--text);
   text-align: left;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 var(--hairline);
-  transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
+  box-shadow:
+    inset 0 1px 0 var(--hairline),
+    0 1px 0 rgba(0, 0, 0, 0.2);
+  transition:
+    border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+}
+
+.entityCard::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--brand-blue), var(--brand-green));
+  opacity: 0;
+  transform: scaleY(0.5);
+  transform-origin: center;
+  transition: opacity 220ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .entityCard:hover,
 .entityCard:focus-visible {
   outline: none;
-  border-color: var(--accent);
-  background: rgba(0, 153, 255, 0.11);
+  border-color: var(--accent-border);
+  background:
+    linear-gradient(180deg, rgba(0, 153, 255, 0.1) 0%, rgba(0, 153, 255, 0.02) 60%),
+    var(--surface-soft);
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 var(--hairline),
+    0 16px 32px -18px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(0, 153, 255, 0.18);
+}
+
+.entityCard:hover::before,
+.entityCard:focus-visible::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.entityCard:active {
   transform: translateY(-1px);
 }
 
@@ -258,9 +362,9 @@
 .identityLine,
 .eventMeta {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
 }
 
 .entityCardTop strong,
@@ -277,16 +381,131 @@
   white-space: nowrap;
 }
 
+.placeName {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+  color: var(--text-h);
+  line-height: 1.25;
+}
+
+.actorName {
+  min-width: 0;
+  font-family: var(--sans);
+}
+
+.actorName :global(.personChip) {
+  height: 36px;
+  gap: 9px;
+  padding-inline: 15px 16px;
+  font-family: var(--sans);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.actorName :global(.personChipDot) {
+  width: 10px;
+  height: 10px;
+}
+
+.eventBadge {
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-h);
+  padding: 4px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  white-space: nowrap;
+  line-height: 1;
+  letter-spacing: 0.2px;
+  transition: border-color 200ms ease, background 200ms ease, color 200ms ease;
+}
+
+.entityCard:hover .eventBadge,
+.entityCard:focus-visible .eventBadge {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--text-h);
+}
+
 .entityCard p {
   font-size: 13px;
   line-height: 1.5;
   max-width: 60ch;
 }
 
+.entityMeta {
+  color: var(--text);
+}
+
 .coords {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 2px;
   color: var(--brand-blue);
   font-family: var(--mono);
   font-size: 12px;
+  letter-spacing: 0.2px;
+}
+
+.coordsLabel {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--brand-green);
+  padding: 3px 6px;
+  border: 1px solid rgba(126, 193, 14, 0.32);
+  border-radius: 4px;
+  background: rgba(126, 193, 14, 0.08);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.cardArrow {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--text);
+  opacity: 0;
+  transform: translate(-4px, 0);
+  transition:
+    opacity 200ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 200ms ease;
+  pointer-events: none;
+}
+
+.entityCard:hover .cardArrow,
+.entityCard:focus-visible .cardArrow {
+  opacity: 1;
+  transform: translate(0, 0);
+  color: var(--brand-yellow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entityCard,
+  .entityCard::before,
+  .cardArrow,
+  .eventBadge {
+    transition: none;
+  }
+  .entityCard:hover,
+  .entityCard:focus-visible {
+    transform: none;
+  }
 }
 
 .panel {

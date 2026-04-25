@@ -19,21 +19,27 @@ export function Chip({ name, toneKey, onClick, title }: Props) {
 
   const content = (
     <>
-      <span className={styles.dot} aria-hidden="true" />
+      <span className={`${styles.dot} personChipDot`} aria-hidden="true" />
       <span className={styles.label}>{name || '?'}</span>
     </>
   );
 
   if (onClick) {
     return (
-      <button type="button" className={styles.chip} style={style} onClick={onClick} title={title ?? name}>
+      <button
+        type="button"
+        className={`${styles.chip} personChip`}
+        style={style}
+        onClick={onClick}
+        title={title ?? name}
+      >
         {content}
       </button>
     );
   }
 
   return (
-    <span className={styles.chip} style={style} title={title ?? name}>
+    <span className={`${styles.chip} personChip`} style={style} title={title ?? name}>
       {content}
     </span>
   );
